@@ -1,11 +1,12 @@
 # 1. Εγκατάσταση Εργαλείων
 [phases.setup]
-nixPkgs = ["python311", "nodejs", "gcc"]
+# ΠΡΟΣΟΧΗ: Προσθέσαμε το 'python311Packages.pip' για να υπάρχει η εντολή pip
+nixPkgs = ["python311", "python311Packages.pip", "nodejs", "gcc"]
 
 # 2. Εγκατάσταση Βιβλιοθηκών
 [phases.install]
 cmds = [
-    # Καλούμε το pip μέσω της python3 και σπάμε τους κανόνες ασφαλείας συστήματος (στο Docker επιτρέπεται)
+    # Τώρα το module pip υπάρχει και θα τρέξει
     "python3 -m pip install -r requirements.txt --break-system-packages",
     "cd frontend && npm install"
 ]
