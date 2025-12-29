@@ -1,0 +1,17 @@
+# 1. Εγκατάσταση Εργαλείων (Python + Node.js)
+[phases.setup]
+nixPkgs = ["python3", "nodejs", "npm", "gcc"]
+
+# 2. Εγκατάσταση & Build (Backend + Frontend)
+[phases.build]
+cmds = [
+    # Python dependencies
+    "python -m venv --copies /opt/venv && . /opt/venv/bin/activate && pip install -r requirements.txt",
+    
+    # React dependencies & Build
+    "cd frontend && npm install && npm run build"
+]
+
+# 3. Εκκίνηση Εφαρμογής
+[phases.start]
+cmd = "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
