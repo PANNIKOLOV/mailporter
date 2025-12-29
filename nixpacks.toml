@@ -1,13 +1,21 @@
 # 1. Εγκατάσταση Εργαλείων
 [phases.setup]
-# ΠΡΟΣΟΧΗ: Προσθέσαμε το 'python311Packages.pip' για να υπάρχει η εντολή pip
-nixPkgs = ["python311", "python311Packages.pip", "nodejs", "gcc"]
+# Προσθέτουμε το curl για να κατεβάσουμε τον installer του pip
+nixPkgs = ["python3", "nodejs", "gcc", "curl"]
 
 # 2. Εγκατάσταση Βιβλιοθηκών
 [phases.install]
 cmds = [
-    # Τώρα το module pip υπάρχει και θα τρέξει
+    # Βήμα Α: Κατεβάζουμε το script εγκατάστασης του pip
+    "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py",
+    
+    # Βήμα Β: Τρέχουμε το script για να εγκατασταθεί το pip με το ζόρι
+    "python3 get-pip.py --break-system-packages",
+    
+    # Βήμα Γ: Τώρα που έχουμε pip, βάζουμε τα requirements
     "python3 -m pip install -r requirements.txt --break-system-packages",
+    
+    # Βήμα Δ: Frontend install
     "cd frontend && npm install"
 ]
 
