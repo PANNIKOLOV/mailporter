@@ -1,14 +1,16 @@
-# 1. Εγκατάσταση Εργαλείων (Python + Node.js)
+# 1. Εγκατάσταση Εργαλείων
 [phases.setup]
-nixPkgs = ["python3", "nodejs", "npm", "gcc"]
+# ΑΦΑΙΡΕΣΑ το "npm" από εδώ, γιατί περιέχεται στο "nodejs"
+nixPkgs = ["python3", "nodejs", "gcc"]
 
 # 2. Εγκατάσταση & Build (Backend + Frontend)
 [phases.build]
 cmds = [
-    # Python dependencies
+    # Εγκατάσταση Python πακέτων
     "python -m venv --copies /opt/venv && . /opt/venv/bin/activate && pip install -r requirements.txt",
     
-    # React dependencies & Build
+    # Build του React Frontend
+    # Το npm θα δουλέψει κανονικά επειδή βάλαμε το nodejs πάνω
     "cd frontend && npm install && npm run build"
 ]
 
