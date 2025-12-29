@@ -1,49 +1,39 @@
+import os
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from app.api.api import api_router
-from app.core.config import settings
-from app.core.database import engine, Base
-import os
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+app = FastAPI()
 
-app = FastAPI(title=settings.PROJECT_NAME)
+@app.get("/")
+async def debug_root():
+    # 1. Βρες πού βρισκόμαστε τώρα (Current Working Directory)
+    cwd = os.getcwd()
+    
+    # 2. Δες τι αρχεία υπάρχουν εδώ
+    files_in_root = os.listdir(cwd)
+    
+    # 3. Δες αν υπάρχει φάκελος 'frontend' εδώ
+    frontend_path = os.path.join(cwd, "frontend")
+    frontend_exists = os.path.exists(frontend_path)
+    
+    files_in_frontend = "Folder not found"
+    if frontend_exists:
+        try:
+            files_in_frontend = os.listdir(frontend_path)
+        except:
+            files_in_frontend = "Found but cannot read"
 
-# Set all CORS enabled origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:8000", "https://mailporter.dionisos.icu"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    # Επιστρέφουμε τα στοιχεία για να δούμε τι συμβαίνει
+    return {
+        "DEBUG_INFO": "Αναφορά αρχείων",
+        "Τρέχων Φάκελος (CWD)": cwd,
+        "Αρχεία στον τρέχοντα φάκελο": files_in_root,
+        "Ψάχνω το frontend εδώ": frontend_path,
+        "Υπάρχει το frontend;": frontend_exists,
+        "Περιεχόμενα Frontend": files_in_frontend
+    }
 
-app.include_router(api_router, prefix=settings.API_V1_STR)
-
-# Serve React Frontend
-# We check if the build directory exists (production mode)
-frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "dist")
-
-if os.path.exists(frontend_dir):
-    app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dir, "assets")), name="assets")
-
-    @app.get("/{full_path:path}")
-    async def serve_frontend(full_path: str):
-        # If the path starts with /api, let it fall through to the API router (handled above)
-        # But wait, the API router is already included with prefix.
-        # So if we are here, it didn't match an API route.
-        
-        # Check if file exists in frontend/dist (e.g. favicon.ico)
-        file_path = os.path.join(frontend_dir, full_path)
-        if os.path.exists(file_path) and os.path.isfile(file_path):
-            return FileResponse(file_path)
-            
-        # Otherwise return index.html for React Router to handle
-        return FileResponse(os.path.join(frontend_dir, "index.html"))
-else:
-    @app.get("/")
-    def read_root():
-        return {"message": "Welcome to MailPorter API (Frontend build not found)"}
+@app.get("/api/health")
+async def health():
+    return {"status": "ok"}
