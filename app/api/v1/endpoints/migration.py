@@ -44,3 +44,8 @@ def get_migration_status(job_id: int, db: Session = Depends(get_db)):
     if not job:
         raise HTTPException(status_code=404, detail="Migration job not found")
     return job
+
+@router.get("/", response_model=List[MigrationResponse])
+def get_user_migrations(user_id: int, db: Session = Depends(get_db)):
+    migrations = db.query(MigrationJob).filter(MigrationJob.user_id == user_id).all()
+    return migrations
