@@ -1,12 +1,12 @@
-# 1. Εγκατάσταση Γλωσσών
+# 1. Εγκατάσταση Εργαλείων
 [phases.setup]
-nixPkgs = ["python3", "nodejs", "gcc"]
+nixPkgs = ["python311", "nodejs", "gcc"]
 
-# 2. Εγκατάσταση Βιβλιοθηκών (Python & Node)
+# 2. Εγκατάσταση Βιβλιοθηκών
 [phases.install]
 cmds = [
-    # Δεν φτιάχνουμε venv, απλά κάνουμε install
-    "pip install -r requirements.txt",
+    # Καλούμε το pip μέσω της python3 και σπάμε τους κανόνες ασφαλείας συστήματος (στο Docker επιτρέπεται)
+    "python3 -m pip install -r requirements.txt --break-system-packages",
     "cd frontend && npm install"
 ]
 
@@ -18,4 +18,4 @@ cmds = [
 
 # 4. Εκκίνηση
 [phases.start]
-cmd = "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
+cmd = "python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
