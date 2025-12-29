@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../api';
+import { EnvelopeIcon, KeyIcon, ServerIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 interface MigrationFormProps {
   onMigrationStarted: (migration: any) => void;
@@ -35,7 +36,6 @@ const MigrationForm: React.FC<MigrationFormProps> = ({ onMigrationStarted }) => 
 
       const response = await api.post(`/migrations/?user_id=${userId}`, formData);
       onMigrationStarted(response.data);
-      // Reset form or keep it? Let's keep it for now but clear passwords maybe
       setFormData(prev => ({ ...prev, source_password: '', dest_password: '' }));
     } catch (err: any) {
       console.error(err);
@@ -45,68 +45,92 @@ const MigrationForm: React.FC<MigrationFormProps> = ({ onMigrationStarted }) => 
     }
   };
 
-  return (
-    <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-      <div className="md:grid md:grid-cols-3 md:gap-6">
-        <div className="md:col-span-1">
-          <h3 className="text-lg font-medium leading-6 text-gray-900">New Migration</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Enter the details for the source and destination email accounts.
-          </p>
+  const InputField = ({ label, name, type = "text", placeholder, icon: Icon }: any) => (
+      <div className="col-span-6 sm:col-span-4">
+        <label htmlFor={name} className="block text-sm font-medium text-slate-300">{label}</label>
+        <div className="mt-1 relative rounded-md shadow-sm">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Icon className="h-5 w-5 text-slate-500" aria-hidden="true" />
+            </div>
+            <input
+                type={type}
+                name={name}
+                id={name}
+                required
+                value={(formData as any)[name]}
+                onChange={handleChange}
+                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-slate-600 rounded-md bg-slate-700 text-white placeholder-slate-400 py-2.5"
+                placeholder={placeholder}
+            />
         </div>
-        <div className="mt-5 md:mt-0 md:col-span-2">
+      </div>
+  );
+
+  return (
+    <div className="bg-slate-800 shadow-xl rounded-2xl border border-slate-700 overflow-hidden">
+      <div className="px-6 py-5 border-b border-slate-700 bg-slate-800/50">
+          <h3 className="text-lg leading-6 font-semibold text-white">Start New Migration</h3>
+          <p className="mt-1 text-sm text-slate-400">
+            Configure your source and destination IMAP accounts to begin the transfer.
+          </p>
+      </div>
+      <div className="p-6">
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-6 gap-6">
+            <div className="grid grid-cols-1 gap-y-8 gap-x-8 md:grid-cols-2">
               
               {/* Source Account */}
-              <div className="col-span-6">
-                <span className="text-md font-medium text-gray-700">Source Account</span>
-              </div>
-              <div className="col-span-6 sm:col-span-4">
-                <label className="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" name="source_email" required value={formData.source_email} onChange={handleChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-              </div>
-              <div className="col-span-6 sm:col-span-4">
-                <label className="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" name="source_password" required value={formData.source_password} onChange={handleChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-              </div>
-              <div className="col-span-6 sm:col-span-4">
-                <label className="block text-sm font-medium text-gray-700">IMAP Host</label>
-                <input type="text" name="source_host" required value={formData.source_host} onChange={handleChange} placeholder="imap.gmail.com" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+              <div className="space-y-6">
+                <div className="flex items-center space-x-2 pb-2 border-b border-slate-700">
+                    <span className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold text-sm">1</span>
+                    <h4 className="text-md font-medium text-white">Source Account</h4>
+                </div>
+                <div className="space-y-4">
+                    <InputField label="Email Address" name="source_email" type="email" placeholder="user@source.com" icon={EnvelopeIcon} />
+                    <InputField label="Password" name="source_password" type="password" placeholder="••••••••" icon={KeyIcon} />
+                    <InputField label="IMAP Host" name="source_host" placeholder="imap.gmail.com" icon={ServerIcon} />
+                </div>
               </div>
 
               {/* Destination Account */}
-              <div className="col-span-6 mt-4">
-                <span className="text-md font-medium text-gray-700">Destination Account</span>
-              </div>
-              <div className="col-span-6 sm:col-span-4">
-                <label className="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" name="dest_email" required value={formData.dest_email} onChange={handleChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-              </div>
-              <div className="col-span-6 sm:col-span-4">
-                <label className="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" name="dest_password" required value={formData.dest_password} onChange={handleChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-              </div>
-              <div className="col-span-6 sm:col-span-4">
-                <label className="block text-sm font-medium text-gray-700">IMAP Host</label>
-                <input type="text" name="dest_host" required value={formData.dest_host} onChange={handleChange} placeholder="imap.mail.yahoo.com" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+              <div className="space-y-6">
+                <div className="flex items-center space-x-2 pb-2 border-b border-slate-700">
+                    <span className="flex-shrink-0 h-8 w-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm">2</span>
+                    <h4 className="text-md font-medium text-white">Destination Account</h4>
+                </div>
+                <div className="space-y-4">
+                    <InputField label="Email Address" name="dest_email" type="email" placeholder="user@dest.com" icon={EnvelopeIcon} />
+                    <InputField label="Password" name="dest_password" type="password" placeholder="••••••••" icon={KeyIcon} />
+                    <InputField label="IMAP Host" name="dest_host" placeholder="imap.mail.yahoo.com" icon={ServerIcon} />
+                </div>
               </div>
 
             </div>
             
-            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+            {error && (
+                <div className="mt-6 rounded-md bg-red-500/10 p-4">
+                    <div className="flex">
+                        <div className="ml-3">
+                            <h3 className="text-sm font-medium text-red-400">{error}</h3>
+                        </div>
+                    </div>
+                </div>
+            )}
 
-            <div className="mt-6">
+            <div className="mt-8 pt-5 border-t border-slate-700 flex justify-end">
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400"
+                className="inline-flex justify-center items-center py-2.5 px-6 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Starting...' : 'Start Migration'}
+                {loading ? (
+                    <>
+                        <ArrowPathIcon className="animate-spin -ml-1 mr-2 h-5 w-5" />
+                        Starting...
+                    </>
+                ) : 'Start Migration'}
               </button>
             </div>
           </form>
-        </div>
       </div>
     </div>
   );

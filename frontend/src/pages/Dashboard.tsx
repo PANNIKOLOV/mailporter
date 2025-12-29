@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import MigrationForm from '../components/MigrationForm';
 import MigrationList from '../components/MigrationList';
+import { ArrowRightOnRectangleIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 
 const Dashboard: React.FC = () => {
   const [migrations, setMigrations] = useState<any[]>([]);
@@ -43,34 +44,52 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">MailPorter Dashboard</h1>
-          <button 
-            onClick={handleLogout}
-            className="ml-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
-          >
-            Logout
-          </button>
+    <div className="min-h-screen bg-slate-900">
+      {/* Navbar */}
+      <header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-10 backdrop-blur-md bg-slate-800/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+                <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-indigo-600 rounded-lg p-1.5">
+                        <EnvelopeIcon className="h-6 w-6 text-white" />
+                    </div>
+                    <span className="ml-3 text-xl font-bold text-white tracking-tight">MailPorter</span>
+                </div>
+                <div>
+                    <button 
+                        onClick={handleLogout}
+                        className="inline-flex items-center px-4 py-2 border border-slate-600 text-sm font-medium rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500 transition-colors"
+                    >
+                        <ArrowRightOnRectangleIcon className="-ml-1 mr-2 h-4 w-4" />
+                        Logout
+                    </button>
+                </div>
+            </div>
         </div>
       </header>
-      <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          {/* Replace with your content */}
-          <div className="px-4 py-6 sm:px-0">
-             <div className="grid grid-cols-1 gap-8">
+
+      <main className="py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="md:flex md:items-center md:justify-between mb-8">
+                <div className="flex-1 min-w-0">
+                    <h2 className="text-2xl font-bold leading-7 text-white sm:text-3xl sm:truncate">
+                        Dashboard
+                    </h2>
+                    <p className="mt-1 text-sm text-slate-400">
+                        Manage your email migrations and track their progress in real-time.
+                    </p>
+                </div>
+            </div>
+
+             <div className="space-y-8">
                 <section>
                     <MigrationForm onMigrationStarted={handleMigrationStarted} />
                 </section>
                 
                 <section>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Migration History</h2>
                     <MigrationList migrations={migrations} />
                 </section>
              </div>
-          </div>
-          {/* /End replace */}
         </div>
       </main>
     </div>
